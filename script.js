@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- СПИСОК НАВЫКОВ ---
     const SKILL_LIST = [
@@ -6,8 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         "Расследование", "Ремесло", "Ресурсы", "Скрытность", "Стрельба",
         "Телосложение", "Эмпатия"
     ];
-
-    let skillCounter = 0;
 
     // --- НАСТРОЙКА НАВЫКОВ ---
     const skillsContainer = document.querySelector('.skills-table-container');
@@ -20,33 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { label: "Средний (+1)", level: 1, pyramidSlots: 4 }
     ];
 
-    function createSkillDropdown(isPyramid = false) {
-        skillCounter++;
-        const select = document.createElement('select');
-        select.name = `skill-${skillCounter}`;
-        select.classList.add(isPyramid ? 'pyramid-slot' : 'empty-slot');
-
-        let optionsHTML = '<option value="">--</option>';
-        SKILL_LIST.forEach(skill => {
-            optionsHTML += `<option value="${skill.toLowerCase()}">${skill}</option>`;
-        });
-        select.innerHTML = optionsHTML;
-        
-        select.addEventListener('change', updateStressAndConsequences);
-        
-        const slotDiv = document.createElement('div');
-        slotDiv.className = 'skill-slot';
-        slotDiv.appendChild(select);
-        return slotDiv;
-    }
-
-    // Функция для очистки таблицы навыков
-    function clearSkillsTable() {
-        skillsContainer.innerHTML = '';
-    }
-
-    // Функция для создания таблицы навыков
     function createSkillsTable() {
+        skillsContainer.innerHTML = '';
+        
         skillLevels.forEach(item => {
             const row = document.createElement('div');
             row.className = 'skill-row';
@@ -57,9 +32,29 @@ document.addEventListener('DOMContentLoaded', () => {
             label.textContent = item.label;
             row.appendChild(label);
 
+            // Создаем ячейки для навыков
             for (let i = 0; i < 5; i++) {
-                const isPyramidSlot = i < item.pyramidSlots;
-                row.appendChild(createSkillDropdown(isPyramidSlot));
+                const skillSlot = document.createElement('div');
+                skillSlot.className = 'skill-slot';
+                
+                if (i < item.pyramidSlots) {
+                    skillSlot.classList.add('pyramid-slot');
+                } else {
+                    skillSlot.classList.add('empty-slot');
+                }
+                
+                const select = document.createElement('select');
+                select.name = `skill-${item.level}-${i}`;
+                
+                let optionsHTML = '<option value="">--</option>';
+                SKILL_LIST.forEach(skill => {
+                    optionsHTML += `<option value="${skill.toLowerCase()}">${skill}</option>`;
+                });
+                select.innerHTML = optionsHTML;
+                
+                select.addEventListener('change', updateStressAndConsequences);
+                skillSlot.appendChild(select);
+                row.appendChild(skillSlot);
             }
             
             skillsContainer.appendChild(row);
@@ -96,14 +91,16 @@ document.addEventListener('DOMContentLoaded', () => {
         oldSkills.forEach(skill => {
             const row = document.querySelector(`.skill-row[data-level="${skill.level}"]`);
             if (row) {
-                const emptySlot = row.querySelector('select:not([disabled]) option[value=""]')?.parentElement;
-                if (emptySlot && emptySlot.value === '') {
+                // Находим первый пустой слот в этой строке
+                const emptySlot = row.querySelector('.skill-slot select[value=""]');
+                if (emptySlot) {
                     emptySlot.value = skill.name;
                 }
             }
         });
     }
 
+    // --- ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ ---
     // --- ТРЮКИ И ОБНОВЛЕНИЕ ---
     const stuntsContainer = document.getElementById('stunts-container');
     const addStuntBtn = document.getElementById('add-stunt-btn');
