@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анкета персонажа FATE</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="top-bar">
+        <h1>FATE Core Character Sheet</h1>
+        <div class="button-group">
+            <button id="saveBtn">Сохранить в файл</button>
+            <button id="loadBtn">Загрузить из файла</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="card">
+            <div class="basic-info-grid">
+                <div class="basic-info-fields">
+                    <h2>Основная информация</h2>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label for="char-name">Имя</label>
+                            <input type="text" id="char-name" name="char-name">
+                        </div>
+                        <div class="field">
+                            <label for="char-description">Описание</label>
+                            <input type="text" id="char-description" name="char-description">
+                        </div>
+                    </div>
+                </div>
+                <div class="photo-section">
+                    <div class="field">
+                        <label for="char-photo">Фотография персонажа</label>
+                        <input type="file" id="char-photo" name="char-photo" accept="image/*">
+                        <div id="photo-preview" class="photo-preview"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Аспекты</h2>
+            <div class="aspects-container">
+                <div class="field">
+                    <label for="aspect-concept">Концепция</label>
+                    <input type="text" id="aspect-concept" name="aspect-concept">
+                </div>
+                <div class="field">
+                    <label for="aspect-trouble">Проблема</label>
+                    <input type="text" id="aspect-trouble" name="aspect-trouble">
+                </div>
+                <hr>
+                <div class="phase-block">
+                    <div class="field">
+                        <label for="aspect-phase1">Аспект первой фазы</label>
+                        <input type="text" id="aspect-phase1" name="aspect-phase1">
+                    </div>
+                    <div class="field">
+                        <label for="phase1-desc">Первая фаза: Ваше приключение</label>
+                        <textarea id="phase1-desc" name="phase1-desc" placeholder="Опишите ваше первое приключение..."></textarea>
+                    </div>
+                </div>
+                <div class="phase-block">
+                    <div class="field">
+                        <label for="aspect-phase2">Аспект второй фазы</label>
+                        <input type="text" id="aspect-phase2" name="aspect-phase2">
+                    </div>
+                    <div class="field">
+                        <label for="phase2-desc">Вторая фаза: Пути пересекаются</label>
+                        <textarea id="phase2-desc" name="phase2-desc" placeholder="Опишите, как вы встретили персонажа другого игрока..."></textarea>
+                    </div>
+                </div>
+                <div class="phase-block">
+                    <div class="field">
+                        <label for="aspect-phase3">Аспект третьей фазы</label>
+                        <input type="text" id="aspect-phase3" name="aspect-phase3">
+                    </div>
+                     <div class="field">
+                        <label for="phase3-desc">Третья фаза: Пути пересекаются снова</label>
+                        <textarea id="phase3-desc" name="phase3-desc" placeholder="Опишите еще одну историю, связывающую вас с другим персонажем..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Навыки</h2>
+            <div class="skills-table-container">
+                </div>
+        </section>
+
+        <section class="card">
+            <div class="header-with-stat">
+                <h2>Трюки</h2>
+                <div class="stat-box">
+                    <span>Обновление</span>
+                    <strong id="refresh-value">3</strong>
+                </div>
+            </div>
+            <div id="stunts-container">
+                <div class="stunt-entry">
+                    <textarea name="stunt-1" placeholder="Введите описание трюка..."></textarea>
+                    <button class="remove-stunt-btn">×</button>
+                </div>
+                <div class="stunt-entry">
+                    <textarea name="stunt-2" placeholder="Введите описание трюка..."></textarea>
+                    <button class="remove-stunt-btn">×</button>
+                </div>
+                <div class="stunt-entry">
+                    <textarea name="stunt-3" placeholder="Введите описание трюка..."></textarea>
+                    <button class="remove-stunt-btn">×</button>
+                </div>
+            </div>
+            <button id="add-stunt-btn">+ Добавить трюк</button>
+        </section>
+
+        <section class="card">
+            <h2>Стресс и Последствия</h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Физический стресс (Телосложение)</h3>
+                    <div class="stress-track" id="physical-stress-track">
+                        <div class="stress-box">1</div>
+                        <div class="stress-box">2</div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Ментальный стресс (Воля)</h3>
+                    <div class="stress-track" id="mental-stress-track">
+                        <div class="stress-box">1</div>
+                        <div class="stress-box">2</div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <h3>Последствия</h3>
+            <div class="consequences">
+                <div class="field">
+                    <label>Легкое (-2)</label>
+                    <input type="text" id="consequence-light-1" name="consequence-light-1">
+                </div>
+                 <div class="field" id="consequence-light-2-field" style="display: none;">
+                    <label>Легкое (-2) (от навыка)</label>
+                    <input type="text" id="consequence-light-2" name="consequence-light-2">
+                </div>
+                <div class="field">
+                    <label>Среднее (-4)</label>
+                    <input type="text" id="consequence-mid" name="consequence-mid">
+                </div>
+                <div class="field">
+                    <label>Серьезное (-6)</label>
+                    <input type="text" id="consequence-heavy" name="consequence-heavy">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
