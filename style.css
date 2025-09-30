@@ -1,4 +1,76 @@
 
+/* Секция Навыков (ИСПРАВЛЕННЫЕ СТИЛИ) */
+.skills-table-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 15px;
+}
+
+.skill-row {
+    display: grid;
+    grid-template-columns: 140px repeat(5, 1fr);
+    gap: 4px;
+    align-items: center;
+}
+
+.skill-label {
+    font-weight: bold;
+    text-align: right;
+    padding-right: 10px;
+    font-size: 0.9em;
+    color: #1c1e21;
+}
+
+.skill-slot {
+    position: relative;
+    border: 2px solid #000;
+    border-radius: 3px;
+    background-color: white;
+}
+
+.skill-slot select {
+    width: 100%;
+    padding: 8px;
+    font-size: 0.85em;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+}
+
+/* Темные ячейки для обязательных слотов пирамиды */
+.skill-slot.pyramid-slot {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+}
+
+.skill-slot.pyramid-slot select {
+    color: white;
+    font-weight: bold;
+}
+
+.skill-slot.pyramid-slot select option {
+    background-color: white;
+    color: #2c3e50;
+}
+
+/* Светлые ячейки для дополнительных слотов */
+.skill-slot.empty-slot {
+    background-color: #ecf0f1;
+    border-color: #bdc3c7;
+}
+
+.skill-slot.empty-slot select {
+    color: #2c3e50;
+}
+
+.skill-slot.empty-slot select option {
+    background-color: white;
+    color: #2c3e50;
+}
+
+/* Остальные стили без изменений */
 /* Основные стили */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -123,77 +195,6 @@ textarea {
 /* Секция аспектов */
 .phase-block {
     margin-top: 15px;
-}
-
-/* Секция Навыков (ИСПРАВЛЕННЫЕ СТИЛИ) */
-.skills-table-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 15px;
-}
-
-.skill-row {
-    display: grid;
-    grid-template-columns: 140px repeat(5, 1fr);
-    gap: 4px;
-    align-items: center;
-}
-
-.skill-label {
-    font-weight: bold;
-    text-align: right;
-    padding-right: 10px;
-    font-size: 0.9em;
-    color: #1c1e21;
-}
-
-.skill-slot {
-    position: relative;
-}
-
-/* Стили для селектов навыков */
-.skill-slot select {
-    width: 100%;
-    padding: 8px;
-    font-size: 0.85em;
-    border-radius: 3px;
-    border: 1px solid #ccd0d5;
-    background-color: #ffffff;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-/* Темные ячейки для обязательных слотов пирамиды */
-.skill-slot select.pyramid-slot {
-    background-color: #2c3e50;
-    color: white;
-    border-color: #2c3e50;
-    font-weight: bold;
-}
-
-.skill-slot select.pyramid-slot:hover {
-    background-color: #34495e;
-    border-color: #34495e;
-}
-
-/* Светлые ячейки для дополнительных слотов */
-.skill-slot select.empty-slot {
-    background-color: #ecf0f1;
-    color: #2c3e50;
-    border-color: #bdc3c7;
-}
-
-.skill-slot select.empty-slot:hover {
-    background-color: #d5dbdb;
-    border-color: #a6acaf;
-}
-
-/* Стили для опций в выпадающем списке */
-.skill-slot select option {
-    background-color: white;
-    color: #2c3e50;
-    padding: 8px;
 }
 
 /* Секция трюков */
