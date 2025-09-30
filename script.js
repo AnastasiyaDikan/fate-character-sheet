@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- СПИСОК НАВЫКОВ ---
     const SKILL_LIST = [
@@ -18,6 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { label: "Неплохой (+2)", level: 2, pyramidSlots: 3 },
         { label: "Средний (+1)", level: 1, pyramidSlots: 4 }
     ];
+
+    // Переменная для хранения имени текущего файла
+    let currentFileName = 'fate_char.json';
 
     function createSkillsTable() {
         skillsContainer.innerHTML = '';
@@ -104,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ ---
     // --- ТРЮКИ И ОБНОВЛЕНИЕ ---
     const stuntsContainer = document.getElementById('stunts-container');
     const addStuntBtn = document.getElementById('add-stunt-btn');
@@ -238,19 +239,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (el.type === 'file') return;
             charData[el.name] = el.value;
         });
+        
+        // Сохраняем состояние стресса
         charData.stress = {};
-        document.querySelectorAll('.stress-box.filled').forEach((box) => {
-             const trackId = box.parentElement.id;
-             const boxIndex = Array.from(box.parentElement.children).indexOf(box);
-             charData.stress[trackId + '-' + boxIndex] = true;
+        document.querySelectorAll('.stress-box').forEach((box, i) => {
+            if(box.classList.contains('filled')) {
+                const trackId = box.parentElement.id;
+                charData.stress[trackId + '-' + i] = true;
+            }
         });
+        
+        // Сохраняем фотографию
         if (currentPhotoDataUrl) {
             charData.photo = currentPhotoDataUrl;
         }
+
         const dataStr = JSON.stringify(charData, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
         const linkElement = document.createElement('a');
-        linkElement.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-        linkElement.download = 'fate_char.json';
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', currentFileName);
         linkElement.click();
     });
 
@@ -260,10 +269,14 @@ document.addEventListener('DOMContentLoaded', () => {
         input.accept = '.json';
         input.onchange = e => {
             const file = e.target.files[0];
+            // Сохраняем имя файла для последующего сохранения
+            currentFileName = file.name;
+            
             const reader = new FileReader();
             reader.readAsText(file, 'UTF-8');
             reader.onload = readerEvent => {
-                const charData = JSON.parse(readerEvent.target.result);
+                const content = readerEvent.target.result;
+                const charData = JSON.parse(content);
                 
                 // Очищаем текущие данные
                 document.querySelectorAll('input, textarea, select').forEach(el => {
@@ -295,19 +308,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     updatePhotoPreview();
                 }
 
+                // Обновляем все динамические элементы
                 updateStressAndConsequences();
                 updateRefresh();
                 initializeStuntRemoveButtons();
 
+                // Восстанавливаем состояние стресса
                 setTimeout(() => {
-                    document.querySelectorAll('.stress-box').forEach(box => box.classList.remove('filled'));
                     if (charData.stress) {
-                        Object.keys(charData.stress).forEach(key => {
-                            const [trackId, boxIndexStr] = key.split('-');
-                            const boxIndex = parseInt(boxIndexStr, 10);
-                            const track = document.getElementById(trackId);
-                            if(track && track.children[boxIndex]){
-                                track.children[boxIndex].classList.add('filled');
+                        document.querySelectorAll('.stress-box').forEach((box, i) => {
+                            box.classList.remove('filled');
+                            const trackId = box.parentElement.id;
+                            if(charData.stress[trackId + '-' + i]) {
+                                box.classList.add('filled');
                             }
                         });
                     }
@@ -317,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.click();
     });
     
-    // Первоначальный запуск
+    // Первоначальный запуск для установки правильных значений
     updateStressAndConsequences();
     updateRefresh();
     initializeStuntRemoveButtons();
