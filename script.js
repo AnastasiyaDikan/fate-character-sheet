@@ -32,13 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
             label.textContent = item.label;
             row.appendChild(label);
 
-            // Создаем ячейки для навыков
+            // Создаем ячейки для навыков - всего 5 слотов на каждом уровне
             for (let i = 0; i < 5; i++) {
                 const skillSlot = document.createElement('div');
                 skillSlot.className = 'skill-slot';
                 
+                // Определяем, является ли этот слот частью пирамиды
                 if (i < item.pyramidSlots) {
-                    skillSlot.classList.add('pyramid-slot');
+                    skillSlot.classList.add('pyramid-slot', 'active-slot');
                 } else {
                     skillSlot.classList.add('empty-slot');
                 }
@@ -91,10 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
         oldSkills.forEach(skill => {
             const row = document.querySelector(`.skill-row[data-level="${skill.level}"]`);
             if (row) {
-                // Находим первый пустой слот в этой строке
-                const emptySlot = row.querySelector('.skill-slot select[value=""]');
-                if (emptySlot) {
-                    emptySlot.value = skill.name;
+                // Находим первый активный слот в этой строке
+                const activeSlots = row.querySelectorAll('.active-slot select');
+                for (let select of activeSlots) {
+                    if (select.value === '') {
+                        select.value = skill.name;
+                        break;
+                    }
                 }
             }
         });
