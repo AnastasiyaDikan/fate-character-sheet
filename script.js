@@ -124,9 +124,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const refreshCost = Math.max(0, filledStunts - 3);
         refreshValueEl.textContent = baseRefresh - refreshCost;
         initializeStuntRemoveButtons();
+        
+        // Обновляем состояние кнопки добавления трюков
+        updateAddStuntButtonState();
     }
     
     function createStuntEntry() {
+        const currentStunts = stuntsContainer.querySelectorAll('.stunt-entry');
+        
+        // Проверяем, не превышен ли лимит в 5 трюков
+        if (currentStunts.length >= 5) {
+            alert("Вы превысили допустимый порог количества трюков. Максимум 5 трюков.");
+            return;
+        }
+        
         stuntIdCounter++;
         const stuntEntry = document.createElement('div');
         stuntEntry.classList.add('stunt-entry');
@@ -143,6 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         updateRefresh();
+    }
+
+    function updateAddStuntButtonState() {
+        const currentStunts = stuntsContainer.querySelectorAll('.stunt-entry');
+        
+        // Если достигнут лимит в 5 трюков, скрываем кнопку добавления
+        if (currentStunts.length >= 5) {
+            addStuntBtn.style.display = 'none';
+        } else {
+            addStuntBtn.style.display = 'block';
+        }
     }
 
     addStuntBtn.addEventListener('click', createStuntEntry);
@@ -334,4 +356,5 @@ document.addEventListener('DOMContentLoaded', () => {
     updateStressAndConsequences();
     updateRefresh();
     initializeStuntRemoveButtons();
+    updateAddStuntButtonState();
 });
