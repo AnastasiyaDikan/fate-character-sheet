@@ -1,3 +1,4 @@
+
 /* Основные стили */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -113,16 +114,23 @@ textarea {
     resize: vertical;
 }
 
+.helper-text {
+    font-size: 0.9em;
+    color: #606770;
+    margin: -5px 0 15px 0;
+}
+
 /* Секция аспектов */
 .phase-block {
     margin-top: 15px;
 }
 
-/* Секция Навыков (НОВЫЕ СТИЛИ) */
+/* Секция Навыков (УЛУЧШЕННАЯ ТАБЛИЧНАЯ ВЕРСИЯ) */
 .skills-table-container {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-bottom: 15px;
 }
 
 .skill-row {
@@ -146,11 +154,11 @@ textarea {
     border-radius: 3px;
 }
 
-.pyramid-slot {
+.pyramid-slot select {
     border: 2px solid #333;
 }
 
-.empty-slot {
+.empty-slot select {
     border: 1px solid #ccc;
 }
 

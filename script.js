@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Телосложение", "Эмпатия"
     ];
 
-    let skillCounter = 0; // Глобальный счетчик для уникальных имен
+    let skillCounter = 0;
 
     // --- НАСТРОЙКА НАВЫКОВ ---
     const skillsContainer = document.querySelector('.skills-table-container');
@@ -40,23 +40,69 @@ document.addEventListener('DOMContentLoaded', () => {
         return slotDiv;
     }
 
-    skillLevels.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'skill-row';
-        row.dataset.level = item.level;
+    // Функция для очистки таблицы навыков
+    function clearSkillsTable() {
+        skillsContainer.innerHTML = '';
+    }
 
-        const label = document.createElement('div');
-        label.className = 'skill-label';
-        label.textContent = item.label;
-        row.appendChild(label);
+    // Функция для создания таблицы навыков
+    function createSkillsTable() {
+        skillLevels.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'skill-row';
+            row.dataset.level = item.level;
 
-        for (let i = 0; i < 5; i++) {
-            const isPyramidSlot = i < item.pyramidSlots;
-            row.appendChild(createSkillDropdown(isPyramidSlot));
-        }
+            const label = document.createElement('div');
+            label.className = 'skill-label';
+            label.textContent = item.label;
+            row.appendChild(label);
+
+            for (let i = 0; i < 5; i++) {
+                const isPyramidSlot = i < item.pyramidSlots;
+                row.appendChild(createSkillDropdown(isPyramidSlot));
+            }
+            
+            skillsContainer.appendChild(row);
+        });
+    }
+
+    // Инициализация таблицы навыков
+    createSkillsTable();
+
+    // Функция для загрузки старых навыков (из формата skill-name-X и skill-level-X)
+    function loadOldSkillsFormat(charData) {
+        const oldSkills = [];
         
-        skillsContainer.appendChild(row);
-    });
+        // Собираем все старые навыки
+        Object.keys(charData).forEach(key => {
+            if (key.startsWith('skill-name-')) {
+                const num = key.replace('skill-name-', '');
+                const name = charData[key];
+                const level = charData[`skill-level-${num}`];
+                
+                if (name && name.trim() !== '' && level && level !== '0') {
+                    oldSkills.push({
+                        name: name.trim().toLowerCase(),
+                        level: parseInt(level)
+                    });
+                }
+            }
+        });
+
+        // Сортируем навыки по уровню (от высокого к низкому)
+        oldSkills.sort((a, b) => b.level - a.level);
+
+        // Распределяем навыки по таблице
+        oldSkills.forEach(skill => {
+            const row = document.querySelector(`.skill-row[data-level="${skill.level}"]`);
+            if (row) {
+                const emptySlot = row.querySelector('select:not([disabled]) option[value=""]')?.parentElement;
+                if (emptySlot && emptySlot.value === '') {
+                    emptySlot.value = skill.name;
+                }
+            }
+        });
+    }
 
     // --- ТРЮКИ И ОБНОВЛЕНИЕ ---
     const stuntsContainer = document.getElementById('stunts-container');
@@ -217,11 +263,29 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.readAsText(file, 'UTF-8');
             reader.onload = readerEvent => {
                 const charData = JSON.parse(readerEvent.target.result);
+                
+                // Очищаем текущие данные
+                document.querySelectorAll('input, textarea, select').forEach(el => {
+                    if (el.type !== 'file') el.value = '';
+                });
+                
+                // Заполняем основные поля
                 Object.keys(charData).forEach(key => {
                     const el = document.querySelector(`[name="${key}"]`);
-                    if (el && el.type !== 'file') el.value = charData[key];
+                    if (el && el.type !== 'file') {
+                        el.value = charData[key];
+                    }
                 });
 
+                // Проверяем, является ли это старый формат (имеет skill-name- поля)
+                const isOldFormat = Object.keys(charData).some(key => key.startsWith('skill-name-'));
+                
+                if (isOldFormat) {
+                    // Загружаем старые навыки
+                    loadOldSkillsFormat(charData);
+                }
+
+                // Загружаем фотографию
                 if (charData.photo) {
                     currentPhotoDataUrl = charData.photo;
                     updatePhotoPreview();
