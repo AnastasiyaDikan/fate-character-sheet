@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAddStuntButtonState();
     }
     
-    function createStuntEntry() {
+    function createStuntEntry(stuntValue = '') {
         const currentStunts = stuntsContainer.querySelectorAll('.stunt-entry');
         
         // Проверяем, не превышен ли лимит в 5 трюков
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const stuntEntry = document.createElement('div');
         stuntEntry.classList.add('stunt-entry');
         stuntEntry.innerHTML = `
-            <textarea name="stunt-${stuntIdCounter}" placeholder="Введите описание трюка..."></textarea>
+            <textarea name="stunt-${stuntIdCounter}" placeholder="Введите описание трюка...">${stuntValue}</textarea>
             <button class="remove-stunt-btn">×</button>
         `;
         stuntsContainer.appendChild(stuntEntry);
@@ -167,13 +167,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    addStuntBtn.addEventListener('click', createStuntEntry);
+    addStuntBtn.addEventListener('click', () => createStuntEntry());
 
     function initializeStuntRemoveButtons() {
         const allStuntEntries = stuntsContainer.querySelectorAll('.stunt-entry');
         allStuntEntries.forEach(entry => {
             const removeBtn = entry.querySelector('.remove-stunt-btn');
             removeBtn.style.display = allStuntEntries.length > 3 ? 'flex' : 'none';
+        });
+    }
+
+    // Функция для загрузки трюков из данных
+    function loadStunts(charData) {
+        // Очищаем все существующие трюки, кроме первых трех
+        const initialStunts = stuntsContainer.querySelectorAll('.stunt-entry');
+        for (let i = 3; i < initialStunts.length; i++) {
+            initialStunts[i].remove();
+        }
+        
+        // Сбрасываем счетчик
+        stuntIdCounter = 3;
+        
+        // Собираем все трюки из данных
+        const stuntEntries = [];
+        Object.keys(charData).forEach(key => {
+            if (key.startsWith('stunt-')) {
+                stuntEntries.push({
+                    key: key,
+                    value: charData[key]
+                });
+            }
+        });
+        
+        // Сортируем трюки по ключу (чтобы сохранить порядок)
+        stuntEntries.sort((a, b) => {
+            const aNum = parseInt(a.key.replace('stunt-', ''));
+            const bNum = parseInt(b.key.replace('stunt-', ''));
+            return aNum - bNum;
+        });
+        
+        // Заполняем существующие трюки и создаем новые для дополнительных
+        stuntEntries.forEach((stunt, index) => {
+            if (index < 3) {
+                // Заполняем первые три трюка
+                const textarea = stuntsContainer.querySelector(`[name="${stunt.key}"]`);
+                if (textarea) {
+                    textarea.value = stunt.value;
+                }
+            } else {
+                // Создаем новые трюки для дополнительных
+                createStuntEntry(stunt.value);
+            }
         });
     }
 
@@ -320,6 +364,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Загружаем старые навыки
                     loadOldSkillsFormat(charData);
                 }
+
+                // Загружаем трюки
+                loadStunts(charData);
 
                 // Загружаем фотографию
                 if (charData.photo) {
