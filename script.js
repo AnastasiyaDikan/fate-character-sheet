@@ -295,6 +295,35 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('stress-box')) e.target.classList.toggle('filled');
     });
 
+    // --- ЗАМЕТКИ ---
+    const notesBtn = document.getElementById('notesBtn');
+    const notesModal = document.getElementById('notesModal');
+    const notesTextarea = document.getElementById('notesTextarea');
+    const saveNotesBtn = document.getElementById('saveNotesBtn');
+    const closeBtn = document.querySelector('.close');
+
+    // Открытие модального окна
+    notesBtn.addEventListener('click', () => {
+        notesModal.style.display = 'block';
+    });
+
+    // Закрытие модального окна
+    closeBtn.addEventListener('click', () => {
+        notesModal.style.display = 'none';
+    });
+
+    // Закрытие при клике вне окна
+    window.addEventListener('click', (e) => {
+        if (e.target === notesModal) {
+            notesModal.style.display = 'none';
+        }
+    });
+
+    // Сохранение заметок
+    saveNotesBtn.addEventListener('click', () => {
+        notesModal.style.display = 'none';
+    });
+
     // --- СОХРАНЕНИЕ И ЗАГРУЗКА ---
     const saveBtn = document.getElementById('saveBtn');
     const loadBtn = document.getElementById('loadBtn');
@@ -319,6 +348,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentPhotoDataUrl) {
             charData.photo = currentPhotoDataUrl;
         }
+
+        // Сохраняем заметки
+        charData.notes = notesTextarea.value;
 
         const dataStr = JSON.stringify(charData, null, 2);
         const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
@@ -375,6 +407,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     currentPhotoDataUrl = null;
                     updatePhotoPreview();
+                }
+
+                // Загружаем заметки
+                if (charData.notes) {
+                    notesTextarea.value = charData.notes;
+                } else {
+                    notesTextarea.value = '';
                 }
 
                 // Обновляем все динамические элементы

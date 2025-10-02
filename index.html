@@ -10,6 +10,7 @@
     <div class="top-bar">
         <h1>FATE Core Character Sheet</h1>
         <div class="button-group">
+            <button id="notesBtn">Заметки</button>
             <button id="saveBtn">Сохранить в файл</button>
             <button id="loadBtn">Загрузить из файла</button>
         </div>
@@ -157,6 +158,22 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    <!-- Модальное окно для заметок -->
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Заметки</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <textarea id="notesTextarea" placeholder="Введите ваши заметки здесь..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="saveNotesBtn">Сохранить заметки</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
