@@ -99,7 +99,8 @@ hr {
 
 input[type="text"],
 select,
-textarea {
+textarea,
+input[type="number"] {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccd0d5;
@@ -210,16 +211,36 @@ textarea {
     justify-content: space-between;
     align-items: center;
 }
+
+.stat-boxes-container {
+    display: flex;
+    gap: 15px;
+}
+
 .stat-box {
     text-align: center;
     border: 1px solid #dddfe2;
     padding: 5px 10px;
     border-radius: 4px;
+    min-width: 80px;
 }
+
 .stat-box strong {
     display: block;
     font-size: 1.5em;
     color: #4267B2;
+}
+
+.stat-box input[type="number"] {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #28a745;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    width: 100%;
 }
 
 /* Секция стресса */

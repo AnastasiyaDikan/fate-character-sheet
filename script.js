@@ -34,12 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
             label.textContent = item.label;
             row.appendChild(label);
 
-            // Создаем ячейки для навыков - всего 5 слотов на каждом уровне
             for (let i = 0; i < 5; i++) {
                 const skillSlot = document.createElement('div');
                 skillSlot.className = 'skill-slot';
                 
-                // Определяем, является ли этот слот частью пирамиды
                 if (i < item.pyramidSlots) {
                     skillSlot.classList.add('pyramid-slot', 'active-slot');
                 } else {
@@ -64,14 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Инициализация таблицы навыков
     createSkillsTable();
 
-    // Функция для загрузки старых навыков (из формата skill-name-X и skill-level-X)
     function loadOldSkillsFormat(charData) {
         const oldSkills = [];
         
-        // Собираем все старые навыки
         Object.keys(charData).forEach(key => {
             if (key.startsWith('skill-name-')) {
                 const num = key.replace('skill-name-', '');
@@ -87,14 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Сортируем навыки по уровню (от высокого к низкому)
         oldSkills.sort((a, b) => b.level - a.level);
 
-        // Распределяем навыки по таблице
         oldSkills.forEach(skill => {
             const row = document.querySelector(`.skill-row[data-level="${skill.level}"]`);
             if (row) {
-                // Находим первый активный слот в этой строке
                 const activeSlots = row.querySelectorAll('.active-slot select');
                 for (let select of activeSlots) {
                     if (select.value === '') {
@@ -110,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stuntsContainer = document.getElementById('stunts-container');
     const addStuntBtn = document.getElementById('add-stunt-btn');
     const refreshValueEl = document.getElementById('refresh-value');
+    const temporaryRefreshInput = document.getElementById('temporary-refresh');
     let stuntIdCounter = 3;
 
     function updateRefresh() {
@@ -125,14 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshValueEl.textContent = baseRefresh - refreshCost;
         initializeStuntRemoveButtons();
         
-        // Обновляем состояние кнопки добавления трюков
         updateAddStuntButtonState();
     }
     
     function createStuntEntry(stuntValue = '') {
         const currentStunts = stuntsContainer.querySelectorAll('.stunt-entry');
         
-        // Проверяем, не превышен ли лимит в 5 трюков
         if (currentStunts.length >= 5) {
             alert("Вы превысили допустимый порог количества трюков. Максимум 5 трюков.");
             return;
@@ -159,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateAddStuntButtonState() {
         const currentStunts = stuntsContainer.querySelectorAll('.stunt-entry');
         
-        // Если достигнут лимит в 5 трюков, скрываем кнопку добавления
         if (currentStunts.length >= 5) {
             addStuntBtn.style.display = 'none';
         } else {
@@ -177,18 +167,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Функция для загрузки трюков из данных
     function loadStunts(charData) {
-        // Очищаем все существующие трюки, кроме первых трех
         const initialStunts = stuntsContainer.querySelectorAll('.stunt-entry');
         for (let i = 3; i < initialStunts.length; i++) {
             initialStunts[i].remove();
         }
         
-        // Сбрасываем счетчик
         stuntIdCounter = 3;
         
-        // Собираем все трюки из данных
         const stuntEntries = [];
         Object.keys(charData).forEach(key => {
             if (key.startsWith('stunt-')) {
@@ -199,23 +185,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Сортируем трюки по ключу (чтобы сохранить порядок)
         stuntEntries.sort((a, b) => {
             const aNum = parseInt(a.key.replace('stunt-', ''));
             const bNum = parseInt(b.key.replace('stunt-', ''));
             return aNum - bNum;
         });
         
-        // Заполняем существующие трюки и создаем новые для дополнительных
         stuntEntries.forEach((stunt, index) => {
             if (index < 3) {
-                // Заполняем первые три трюка
                 const textarea = stuntsContainer.querySelector(`[name="${stunt.key}"]`);
                 if (textarea) {
                     textarea.value = stunt.value;
                 }
             } else {
-                // Создаем новые трюки для дополнительных
                 createStuntEntry(stunt.value);
             }
         });
@@ -302,24 +284,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveNotesBtn = document.getElementById('saveNotesBtn');
     const closeBtn = document.querySelector('.close');
 
-    // Открытие модального окна
     notesBtn.addEventListener('click', () => {
         notesModal.style.display = 'block';
     });
 
-    // Закрытие модального окна
     closeBtn.addEventListener('click', () => {
         notesModal.style.display = 'none';
     });
 
-    // Закрытие при клике вне окна
     window.addEventListener('click', (e) => {
         if (e.target === notesModal) {
             notesModal.style.display = 'none';
         }
     });
 
-    // Сохранение заметок
     saveNotesBtn.addEventListener('click', () => {
         notesModal.style.display = 'none';
     });
@@ -335,7 +313,6 @@ document.addEventListener('DOMContentLoaded', () => {
             charData[el.name] = el.value;
         });
         
-        // Сохраняем состояние стресса
         charData.stress = {};
         document.querySelectorAll('.stress-box').forEach((box, i) => {
             if(box.classList.contains('filled')) {
@@ -344,12 +321,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Сохраняем фотографию
         if (currentPhotoDataUrl) {
             charData.photo = currentPhotoDataUrl;
         }
 
-        // Сохраняем заметки
         charData.notes = notesTextarea.value;
 
         const dataStr = JSON.stringify(charData, null, 2);
@@ -367,7 +342,6 @@ document.addEventListener('DOMContentLoaded', () => {
         input.accept = '.json';
         input.onchange = e => {
             const file = e.target.files[0];
-            // Сохраняем имя файла для последующего сохранения
             currentFileName = file.name;
             
             const reader = new FileReader();
@@ -376,12 +350,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const content = readerEvent.target.result;
                 const charData = JSON.parse(content);
                 
-                // Очищаем текущие данные
                 document.querySelectorAll('input, textarea, select').forEach(el => {
                     if (el.type !== 'file') el.value = '';
                 });
                 
-                // Заполняем основные поля
                 Object.keys(charData).forEach(key => {
                     const el = document.querySelector(`[name="${key}"]`);
                     if (el && el.type !== 'file') {
@@ -389,18 +361,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                // Проверяем, является ли это старый формат (имеет skill-name- поля)
                 const isOldFormat = Object.keys(charData).some(key => key.startsWith('skill-name-'));
                 
                 if (isOldFormat) {
-                    // Загружаем старые навыки
                     loadOldSkillsFormat(charData);
                 }
 
-                // Загружаем трюки
                 loadStunts(charData);
 
-                // Загружаем фотографию
                 if (charData.photo) {
                     currentPhotoDataUrl = charData.photo;
                     updatePhotoPreview();
@@ -409,19 +377,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     updatePhotoPreview();
                 }
 
-                // Загружаем заметки
                 if (charData.notes) {
                     notesTextarea.value = charData.notes;
                 } else {
                     notesTextarea.value = '';
                 }
 
-                // Обновляем все динамические элементы
                 updateStressAndConsequences();
                 updateRefresh();
                 initializeStuntRemoveButtons();
 
-                // Восстанавливаем состояние стресса
                 setTimeout(() => {
                     if (charData.stress) {
                         document.querySelectorAll('.stress-box').forEach((box, i) => {
