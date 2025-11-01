@@ -51,10 +51,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 SKILL_LIST.forEach(skill => {
                     optionsHTML += `<option value="${skill.toLowerCase()}">${skill}</option>`;
                 });
+                optionsHTML += '<option value="custom">Другое...</option>';
                 select.innerHTML = optionsHTML;
                 
-                select.addEventListener('change', updateStressAndConsequences);
+                // Поле для пользовательского ввода
+                const customInput = document.createElement('input');
+                customInput.type = 'text';
+                customInput.className = 'custom-skill-input';
+                customInput.placeholder = 'Введите свой навык';
+                customInput.style.display = 'none';
+                
+                // Обработчик изменения выбора
+                select.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        customInput.style.display = 'block';
+                        customInput.focus();
+                    } else {
+                        customInput.style.display = 'none';
+                        customInput.value = '';
+                    }
+                    updateStressAndConsequences();
+                });
+                
+                // Обработчик ввода пользовательского навыка
+                customInput.addEventListener('input', function() {
+                    updateStressAndConsequences();
+                });
+                
+                // Обработчик потери фокуса - сохраняем значение в select
+                customInput.addEventListener('blur', function() {
+                    if (this.value.trim() !== '') {
+                        // Создаем временный option для отображения
+                        select.innerHTML = select.innerHTML.replace(
+                            '<option value="custom">Другое...</option>',
+                            `<option value="${this.value.trim().toLowerCase()}">${this.value.trim()}</option><option value="custom">Другое...</option>`
+                        );
+                        select.value = this.value.trim().toLowerCase();
+                        customInput.style.display = 'none';
+                    }
+                });
+                
                 skillSlot.appendChild(select);
+                skillSlot.appendChild(customInput);
                 row.appendChild(skillSlot);
             }
             
@@ -90,7 +128,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const activeSlots = row.querySelectorAll('.active-slot select');
                 for (let select of activeSlots) {
                     if (select.value === '') {
-                        select.value = skill.name;
+                        // Проверяем, есть ли навык в стандартном списке
+                        const isStandardSkill = SKILL_LIST.map(s => s.toLowerCase()).includes(skill.name);
+                        if (isStandardSkill) {
+                            select.value = skill.name;
+                        } else {
+                            // Для пользовательских навыков
+                            select.innerHTML = select.innerHTML.replace(
+                                '<option value="custom">Другое...</option>',
+                                `<option value="${skill.name}">${skill.name}</option><option value="custom">Другое...</option>`
+                            );
+                            select.value = skill.name;
+                        }
                         break;
                     }
                 }
@@ -248,11 +297,25 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.skill-row').forEach(row => {
             const level = parseInt(row.dataset.level, 10);
             row.querySelectorAll('select').forEach(select => {
-                if (select.value === 'телосложение') {
+                const skillValue = select.value.toLowerCase();
+                if (skillValue === 'телосложение' || skillValue.includes('телосложение')) {
                     physiqueLevel = Math.max(physiqueLevel, level);
                 }
-                if (select.value === 'воля') {
+                if (skillValue === 'воля' || skillValue.includes('воля')) {
                     willLevel = Math.max(willLevel, level);
+                }
+            });
+            
+            // Также проверяем пользовательские поля ввода
+            row.querySelectorAll('.custom-skill-input').forEach(input => {
+                if (input.style.display !== 'none' && input.value.trim() !== '') {
+                    const skillValue = input.value.trim().toLowerCase();
+                    if (skillValue === 'телосложение' || skillValue.includes('телосложение')) {
+                        physiqueLevel = Math.max(physiqueLevel, level);
+                    }
+                    if (skillValue === 'воля' || skillValue.includes('воля')) {
+                        willLevel = Math.max(willLevel, level);
+                    }
                 }
             });
         });
@@ -310,7 +373,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const charData = {};
         document.querySelectorAll('input, textarea, select').forEach(el => {
             if (el.type === 'file') return;
-            charData[el.name] = el.value;
+            
+            // Для select с пользовательскими навыками
+            if (el.tagName === 'SELECT' && el.value === 'custom') {
+                const customInput = el.parentElement.querySelector('.custom-skill-input');
+                if (customInput && customInput.value.trim() !== '') {
+                    charData[el.name] = customInput.value.trim().toLowerCase();
+                } else {
+                    charData[el.name] = '';
+                }
+            } else {
+                charData[el.name] = el.value;
+            }
         });
         
         charData.stress = {};
@@ -358,6 +432,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const el = document.querySelector(`[name="${key}"]`);
                     if (el && el.type !== 'file') {
                         el.value = charData[key];
+                    }
+                });
+
+                // Обработка пользовательских навыков после загрузки
+                document.querySelectorAll('select').forEach(select => {
+                    if (select.value && !SKILL_LIST.map(s => s.toLowerCase()).includes(select.value) && select.value !== 'custom') {
+                        // Это пользовательский навык
+                        select.innerHTML = select.innerHTML.replace(
+                            '<option value="custom">Другое...</option>',
+                            `<option value="${select.value}">${select.value}</option><option value="custom">Другое...</option>`
+                        );
                     }
                 });
 
